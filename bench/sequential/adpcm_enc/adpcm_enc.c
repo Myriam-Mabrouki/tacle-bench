@@ -26,6 +26,12 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
 
 /* common sampling rate for sound cards on IBM/PC */
 #define SAMPLE_RATE 11025
@@ -34,11 +40,11 @@
 #define SIZE 3
 #define IN_END 4
 
-
 /*
   Forward declaration of functions
 */
 
+void assign_to_CPU ( int cpuid );
 int adpcm_enc_encode( int, int );
 int adpcm_enc_filtez( int *bpl, int *dlt );
 void adpcm_enc_upzero( int dlt, int *dlti, int *bli );
@@ -182,6 +188,25 @@ int adpcm_enc_delay_bph[ 6 ];
 int adpcm_enc_ah1, adpcm_enc_ah2;
 int adpcm_enc_ph1, adpcm_enc_ph2;
 int adpcm_enc_rh1, adpcm_enc_rh2;
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 
 /* G722 encode function two ints in, one 8 bit output */
@@ -747,6 +772,8 @@ void _Pragma( "entrypoint" ) adpcm_enc_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+
   adpcm_enc_init();
   adpcm_enc_main();
 
