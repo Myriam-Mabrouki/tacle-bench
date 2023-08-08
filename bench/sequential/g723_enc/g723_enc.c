@@ -17,6 +17,15 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 /*
   Declaration of data types
 */
@@ -60,7 +69,7 @@ struct g723_enc_state_t {
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 int g723_enc_abs( int num );
 void g723_enc_init_state( struct g723_enc_state_t *state_ptr );
 int g723_enc_predictor_zero( struct g723_enc_state_t *state_ptr );
@@ -186,6 +195,25 @@ short g723_enc_fitab[ 16 ] = {0, 0, 0, 0x200, 0x200, 0x200, 0x600, 0xE00,
 #define QUANT_MASK  (0xf)   /* Quantization field mask. */
 #define SEG_SHIFT (4)   /* Left shift for segment number. */
 #define SEG_MASK  (0x70)    /* Segment field mask. */
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Arithmetic math functions
@@ -870,6 +898,9 @@ void _Pragma( "entrypoint" ) g723_enc_main()
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   g723_enc_init();
   g723_enc_main();
 

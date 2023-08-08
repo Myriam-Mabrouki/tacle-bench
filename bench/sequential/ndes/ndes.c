@@ -16,6 +16,15 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 /* A read from this address will result in an known value of 1 */
 #define KNOWN_VALUE 1
 #define NDES_WORSTCASE 1
@@ -47,6 +56,7 @@ int ndes_value = 0;
 
 /* Forward funtion prototypes */
 
+void assign_to_CPU ( int cpuid );
 void ndes_des( ndes_immense inp, ndes_immense key, int *newkey, int isw,
                ndes_immense *out );
 void ndes_cyfun( unsigned long ir, ndes_great k, unsigned long *iout );
@@ -56,6 +66,25 @@ void ndes_init( void );
 int ndes_return( void );
 void ndes_main( void );
 int main( void );
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
    Initialization
@@ -383,6 +412,9 @@ void _Pragma( "entrypoint" ) ndes_main()
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   ndes_init();
   ndes_main();
 

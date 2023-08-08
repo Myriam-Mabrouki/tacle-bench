@@ -23,6 +23,9 @@
   License: GPL 2 and LGPL 2
 
 */
+#define _GNU_SOURCE 
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "bits.h"
 #include "arithm.h"
@@ -50,7 +53,6 @@ int main( void );
 */
 
 int ammunition_result;
-
 
 /*
   Core functions

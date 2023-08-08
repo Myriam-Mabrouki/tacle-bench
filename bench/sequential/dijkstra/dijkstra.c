@@ -17,6 +17,15 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "input.h"
 
 /*
@@ -56,6 +65,7 @@ int dijkstra_checksum = 0;
 /*
   Forward declaration of functions
 */
+void assign_to_CPU ( int cpuid );
 void dijkstra_init( void );
 int dijkstra_return( void );
 int dijkstra_enqueue( int node, int dist, int prev );
@@ -64,6 +74,25 @@ int dijkstra_qcount( void );
 int dijkstra_find( int chStart, int chEnd );
 void dijkstra_main( void );
 int main( void );
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void dijkstra_init( void )
 {
@@ -190,6 +219,9 @@ void _Pragma( "entrypoint" ) dijkstra_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   dijkstra_init();
   dijkstra_main();
 

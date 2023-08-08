@@ -33,7 +33,14 @@
     no representations about the suitability of this software for any
     purpose.  It is provided "as is" without express or implied warranty.
 */
-
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "epic.h"
 
@@ -576,6 +583,7 @@ float epic_image[  ]  = {
   Forward declaration of functions
 */
 
+void assign_to_CPU ( int cpuid );
 void epic_init( void );
 void epic_build_pyr( float *image, int x_size, int y_size, int num_levels,
                      float *lo_filter, float *hi_filter, int filter_size );
@@ -617,6 +625,24 @@ static float epic_hi_filter[ FILTER_SIZE ] = {
   0.0199579580, -0.0087309530, -0.0024950907, 0.0012475221
 };
 
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization function
@@ -1129,6 +1155,9 @@ int epic_return()
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   epic_init();
   epic_main();
 

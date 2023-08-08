@@ -156,6 +156,16 @@
    If you increase it beyond 4, you'll have to add a few more loop unrolling
    steps to FindAnagram.
 */
+
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "anagram_ctype.h"
 #include "anagram_stdlib.h"
 #include "anagram_strings.h"
@@ -211,6 +221,7 @@ typedef anagram_Letter *anagram_PLetter;
   Forward declaration of functions
 */
 
+void assign_to_CPU ( int cpuid );
 void anagram_init( void );
 void anagram_main( void );
 int anagram_return( void );
@@ -269,6 +280,25 @@ static int anagram_cpwLast;
 
 /* buffer to write an answer */
 static char anagram_buffer[ 30 ];
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization- and return-value-related functions

@@ -18,6 +18,14 @@
   License: may be used, modified, and re-distributed freely
 
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 /* Remove the following #define for actual WCET analyses! */
 /*
@@ -38,6 +46,7 @@ int petrinet_main_iters_dummy_i = 0,
 /*
   Forward declaration of functions
 */
+void assign_to_CPU ( int cpuid );
 void petrinet_init( void );
 int petrinet_return( void );
 void petrinet_main( void );
@@ -52,6 +61,25 @@ volatile int  petrinet_P3_is_marked;
 volatile long petrinet_P3_marking_member_0[ 6 ];
 
 const long petrinet_CHECKSUM = 0;
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void _Pragma ( "entrypoint" ) petrinet_main( void )
 {
@@ -975,6 +1003,9 @@ int petrinet_return( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   petrinet_main();
 
   return ( petrinet_return() );

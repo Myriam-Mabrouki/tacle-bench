@@ -29,6 +29,15 @@
   Include section
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "jpeglib.h"
 
 
@@ -36,6 +45,7 @@
   Forward declaration of functions
 */
 
+void assign_to_CPU ( int cpuid );
 void cjpeg_transupp_initSeed( void );
 signed char cjpeg_transupp_randomInteger( void );
 void cjpeg_transupp_init( void );
@@ -72,6 +82,25 @@ signed char cjpeg_transupp_output_data5[ 512 ];
 
 struct jpeg_compress_struct cjpeg_transupp_dstinfo;
 
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization- and return-value-related functions
@@ -706,6 +735,10 @@ void _Pragma ( "entrypoint" ) cjpeg_transupp_main( void )
 
 int main( void )
 {
+
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+
   cjpeg_transupp_init();
   cjpeg_transupp_main();
 

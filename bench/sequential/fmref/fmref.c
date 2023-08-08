@@ -3,6 +3,14 @@
   David Maze <dmaze@cag.lcs.mit.edu>
   $Id: fmref.c,v 1.2 2010-10-04 21:21:26 garus Exp $
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "wcclibm.h"
 #ifndef M_PI
@@ -50,6 +58,7 @@ float fmref_eq_cutoffs[ EQUALIZER_BANDS + 1 ] = {
 static int fmref_numiters = 2;
 
 // Forward declarations
+void assign_to_CPU ( int cpuid );
 void fmref_fb_compact( FloatBuffer *fb );
 int fmref_fb_ensure_writable( FloatBuffer *fb, int amount );
 void fmref_get_floats( FloatBuffer *fb );
@@ -60,6 +69,25 @@ void fmref_init_equalizer( EqualizerData *data );
 void fmref_run_equalizer( FloatBuffer *fbin, FloatBuffer *fbout,
                           EqualizerData *data );
 void fmref_main( void );
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void fmref_init( void )
 {
@@ -74,6 +102,9 @@ int fmref_return( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   fmref_init();
   fmref_main();
   return fmref_return();

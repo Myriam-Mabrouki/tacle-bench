@@ -268,6 +268,9 @@
   between "versions 1" and the combined program, version 2.
 
   \**********************************************************************/
+#define _GNU_SOURCE 
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "wcclibm.h"
 #include "wccfile.h"
@@ -2501,6 +2504,8 @@ int susan_return( void )
 
 int main( void )
 {
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   susan_init();
   susan_main();
 

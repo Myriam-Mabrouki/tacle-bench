@@ -37,6 +37,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 /*
   Forward declaration of functions
@@ -732,16 +734,7 @@ void _Pragma( "entrypoint" ) adpcm_dec_main( void )
 int main( void )
 {
   assign_to_CPU(0);
-
-  /* Set the maximum priority */
-  /* struct sched_param sp;
-  printf("test\n");
-  sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
-  printf("test\n");
-  if ( sched_setscheduler(getpid(), SCHED_FIFO, &sp) == -1 ){
-    printf("test fail\n");
-    exit(EXIT_FAILURE);
-  } */
+  setpriority(PRIO_PROCESS, 0, -20);
 
   adpcm_dec_init();
   adpcm_dec_main();

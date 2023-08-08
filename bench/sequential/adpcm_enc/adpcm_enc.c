@@ -32,6 +32,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 /* common sampling rate for sound cards on IBM/PC */
 #define SAMPLE_RATE 11025
@@ -773,6 +775,7 @@ void _Pragma( "entrypoint" ) adpcm_enc_main( void )
 int main( void )
 {
   assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
 
   adpcm_enc_init();
   adpcm_enc_main();

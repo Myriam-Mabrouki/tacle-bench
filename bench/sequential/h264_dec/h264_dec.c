@@ -24,6 +24,14 @@
 /*
   Include section
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "h264_dec.h"
 
@@ -31,7 +39,7 @@
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 void h264_dec_init ();
 int h264_dec_return ();
 void h264_dec_decode_one_macroblock( struct h264_dec_img_par *img );
@@ -51,6 +59,24 @@ signed char h264_dec_img_mpr[ 7 ][ 7 ];
 signed char h264_dec_dec_picture_imgUV[ 2 ][ 64 ][ 54 ];
 struct h264_dec_img_par h264_dec_img;
 
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization- and return-value-related functions
@@ -596,6 +622,9 @@ void _Pragma( "entrypoint" )  h264_dec_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   h264_dec_init();
   h264_dec_main();
 

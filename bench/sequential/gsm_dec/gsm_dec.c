@@ -19,6 +19,14 @@
   License: see the accompanying COPYRIGHT file
 
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "gsm.h"
 #include "add.h"
@@ -38,7 +46,7 @@ volatile int gsm_dec_result;
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 extern word gsm_dec_sub( word a, word b );
 extern word gsm_dec_asl( word a, int n );
 void gsm_dec_Decoding_of_the_coded_Log_Area_Ratios(
@@ -111,6 +119,25 @@ gsm gsm_dec_create( void );
 void gsm_dec_init( void );
 void gsm_dec_main( void );
 int main( void );
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /* add.c */
 
@@ -750,6 +777,9 @@ void _Pragma( "entrypoint" ) gsm_dec_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   gsm_dec_init();
   gsm_dec_main();
   return ( gsm_dec_return() );

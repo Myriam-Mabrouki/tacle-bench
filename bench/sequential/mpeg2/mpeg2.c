@@ -44,6 +44,14 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 /*
   Forward declaration of data types
@@ -55,7 +63,7 @@ struct mbinfo;
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 void mpeg2_init( void );
 int mpeg2_return( void );
 void mpeg2_motion_estimation( unsigned char *, unsigned char *, unsigned char *,
@@ -11389,6 +11397,24 @@ unsigned char mpeg2_oldorgframe[] = {
   0x4e, 0x4c, 0x49, 0x3a, 0x4a, 0x4c, 0x1d, 0x0c
 };
 
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization- and return-value-related functions
@@ -13205,6 +13231,9 @@ void _Pragma ( "entrypoint" ) mpeg2_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+
   mpeg2_init();
   mpeg2_main();
 

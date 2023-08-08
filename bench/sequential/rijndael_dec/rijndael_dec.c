@@ -37,6 +37,14 @@
   fitness for purpose.
   -----------------------------------------------------------------------
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "aes.h"
 #include "rijndael_dec_libc.h"
@@ -55,11 +63,31 @@ int rijndael_dec_checksum = 0;
 /*
   Forward declaration of functions
 */
+void assign_to_CPU ( int cpuid );
 void rijndael_dec_init( void );
 int rijndael_dec_return( void );
 void rijndael_dec_fillrand( unsigned char *buf, int len );
 void rijndael_dec_decfile( struct rijndael_dec_FILE *fin, struct aes *ctx );
 void rijndael_dec_main( void );
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void rijndael_dec_init( void )
 {
@@ -181,7 +209,9 @@ void _Pragma( "entrypoint" ) rijndael_dec_main( void )
 
 int main()
 {
-
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   rijndael_dec_init();
   rijndael_dec_main();
 

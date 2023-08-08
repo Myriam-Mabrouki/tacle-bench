@@ -23,6 +23,14 @@
   License:  See the accompanying README file
 
 */
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "cdjpeg.h"
 
@@ -61,6 +69,7 @@ cjpeg_wrbmp_bmp_dest_struct    cjpeg_wrbmp_bmp_dest;
 /*
   Forward declaration of functions
 */
+void assign_to_CPU ( int cpuid );
 void cjpeg_wrbmp_initInput( void );
 void cjpeg_wrbmp_finish_output_bmp( cjpeg_wrbmp_j_decompress_ptr cinfo );
 void cjpeg_wrbmp_write_colormap( cjpeg_wrbmp_j_decompress_ptr
@@ -72,6 +81,25 @@ void cjpeg_wrbmp_init();
 void cjpeg_wrbmp_main();
 int cjpeg_wrbmp_return();
 int main();
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
    Initialization functions
@@ -209,6 +237,9 @@ int cjpeg_wrbmp_return()
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   cjpeg_wrbmp_init();
   cjpeg_wrbmp_main();
 

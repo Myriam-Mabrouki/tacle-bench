@@ -23,6 +23,15 @@
   Include section
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "audiobeamlibm.h"
 #include "audiobeamlibmalloc.h"
 #include "audiobeam.h"
@@ -31,6 +40,7 @@
   Forward declaration of functions
 */
 
+void assign_to_CPU ( int cpuid );
 void audiobeam_init();
 int audiobeam_return();
 void audiobeam_main( void );
@@ -94,6 +104,25 @@ int audiobeam_checksum;
 /*
   Initialization- and return-value-related functions
 */
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void audiobeam_init()
 {
@@ -577,6 +606,9 @@ void _Pragma( "entrypoint" ) audiobeam_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+
   audiobeam_init();
   audiobeam_main();
 

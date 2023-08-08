@@ -4,7 +4,14 @@
    Universitaet Berlin.  See the accompanying file "COPYRIGHT" for
    details.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
 */
-
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "private.h"
 
 /*
@@ -104,6 +111,9 @@ void gsm_enc_Gsm_RPE_Encoding (
   word     *xmaxc,        /*                              OUT */
   word     *Mc,           /*                              OUT */
   word     *xMc );       /* [ 0..12 ]                      OUT */
+
+
+void assign_to_CPU ( int cpuid );
 
 
 /**************** end #include "private.h" **********************************/
@@ -367,6 +377,25 @@ void gsm_enc_encode ( gsm s, gsm_signal *source, gsm_byte *c )
            | ( ( xmc[ 50 ] & 0x7 ) << 3 )
            | ( xmc[ 51 ] & 0x7 );
 
+}
+
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
 }
 
 /* decode.c */
@@ -2217,6 +2246,9 @@ void _Pragma( "entrypoint" ) gsm_enc_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   gsm_enc_init();
   gsm_enc_main();
   return ( gsm_enc_return() );

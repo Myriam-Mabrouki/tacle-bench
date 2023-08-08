@@ -43,7 +43,14 @@
   new schemes (this item is not a must)
 
 */
-
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 /*
   Declaration of types
@@ -65,7 +72,7 @@ typedef struct {
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 void huff_enc_init( void );
 int huff_enc_return( void );
 void huff_enc_beginning_of_data();
@@ -145,6 +152,24 @@ static unsigned char huff_enc_encoded[ huff_enc_encoded_len ] = {
   207, 39, 192,
 };
 
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 void huff_enc_init( void )
 {
@@ -583,6 +608,9 @@ void _Pragma( "entrypoint" ) huff_enc_main()
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   huff_enc_init();
   huff_enc_main();
   return ( huff_enc_return() );

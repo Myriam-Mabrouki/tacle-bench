@@ -23,6 +23,15 @@
 
 */
 
+#define _GNU_SOURCE 
+#include <sched.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <assert.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
 /*
   Macro definitions
 */
@@ -59,7 +68,7 @@
 /*
   Forward declaration of functions
 */
-
+void assign_to_CPU ( int cpuid );
 void statemate_init( void );
 void statemate_interface( void );
 void statemate_generic_KINDERSICHERUNG_CTRL( void );
@@ -190,6 +199,24 @@ statemate_BEWEGUNG_BLOCK_ERKENNUNG_CTRL_next_state; /** 2 bits **/
 char
 statemate_BLOCK_ERKENNUNG_CTRL_BLOCK_ERKENNUNG_CTRL_next_state; /** 2 bits **/
 
+/* 
+  CPU assignment function
+ */
+
+void assign_to_CPU ( int cpuid )
+{
+  cpu_set_t * cpusetp = NULL;
+  cpusetp = CPU_ALLOC(1);
+  if (cpusetp == NULL) {
+    perror("CPU_ALLOC");
+    exit(EXIT_FAILURE);
+
+  }
+  CPU_ZERO_S(CPU_ALLOC_SIZE(1), cpusetp);
+  CPU_SET_S(cpuid, CPU_ALLOC_SIZE(1), cpusetp);
+  sched_setaffinity(0, sizeof(*cpusetp), cpusetp);
+  CPU_FREE(cpusetp);
+}
 
 /*
   Initialization-related functions
@@ -1271,6 +1298,9 @@ void _Pragma ( "entrypoint" ) statemate_main( void )
 
 int main ( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
+  
   statemate_init();
   statemate_main();
 
