@@ -5,7 +5,7 @@ all: libadpcm_enc.so
 libadpcm_enc.so: adpcm_enc.o
 	$(CC) -shared -o libadpcm_enc.so adpcm_enc.o
 
-adpcm_enc.o: adpcm_enc.c
+adpcm_enc.o: adpcm_enc.c adpcm_enc.h
 	$(CC) -c -Wall -fpic adpcm_enc.o adpcm_enc.c
 
 clean:

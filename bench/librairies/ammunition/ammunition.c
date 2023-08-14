@@ -32,6 +32,7 @@
 #include "ammunition_stdlib.h"
 #include "ammunition_stdio.h"
 #include "ammunition_string.h"
+#include "ammunition.h"
 
 /*
   Forward declaration of functions
@@ -45,7 +46,7 @@ int ammunition_arithm_test();
 void ammunition_init( void );
 int ammunition_return( void );
 void ammunition_main( void );
-int main( void );
+int main_ammunition( void );
 
 
 /*

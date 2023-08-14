@@ -39,6 +39,7 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include "adpcm_dec.h"
 
 /*
   Forward declaration of functions
@@ -65,7 +66,7 @@ int adpcm_dec_sin( int n );
 void adpcm_dec_init();
 int adpcm_dec_return();
 void adpcm_dec_main();
-int main( void );
+int main_adpcm_dec( void );
 
 
 /*

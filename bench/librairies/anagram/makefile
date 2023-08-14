@@ -6,7 +6,7 @@ all: libanagram.so
 libanagram.so: anagram.o anagram_input.o anagram_stdlib.o
 	$(CC) -shared -o libanagram.so anagram.o anagram_input.o anagram_stdlib.o
 
-anagram.o: anagram.c anagram_ctype.h anagram_stdlib.h anagram_strings.h anagram_compare.h
+anagram.o: anagram.c anagram_ctype.h anagram_stdlib.h anagram_strings.h anagram_compare.h anagram.h
 	$(CC) $(CFLAGS) -c anagram.c
 
 anagram_input.o: anagram_input.c

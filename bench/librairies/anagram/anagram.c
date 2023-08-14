@@ -171,6 +171,7 @@
 #include "anagram_strings.h"
 
 #include "anagram_compare.h"
+#include "anagram.h"
 
 /*
   Defines
@@ -238,6 +239,7 @@ anagram_PWord anagram_NextWord( void );
 void anagram_ReadDict( void );
 void anagram_Reset( void );
 void anagram_SortCandidates( void );
+int main_anagram (void);
 
 
 /*

@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include "adpcm_enc.h"
 
 /* common sampling rate for sound cards on IBM/PC */
 #define SAMPLE_RATE 11025
@@ -65,7 +66,7 @@ int adpcm_enc_abs( int n );
 void adpcm_enc_init( void );
 void adpcm_enc_main( void );
 int adpcm_enc_return( void );
-int main( void );
+int main_adpcm_enc( void );
 
 /*
   Forward declaration of global variables
