@@ -6,7 +6,7 @@ all: libdijkstra.so
 libdijkstra.so: dijkstra.o input.o
 	$(CC) -shared -o libdijkstra.so dijkstra.o input.o
 
-dijkstra.o: dijkstra.c input.h
+dijkstra.o: dijkstra.c input.h dijkstra.h
 	$(CC) $(CFLAGS) -c dijkstra.c
 	
 input.o: input.c input.h

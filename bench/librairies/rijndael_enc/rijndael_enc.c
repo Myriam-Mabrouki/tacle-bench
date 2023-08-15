@@ -69,6 +69,7 @@ int rijndael_enc_return( void );
 void rijndael_enc_fillrand( unsigned char *buf, int len );
 void rijndael_enc_encfile( struct rijndael_enc_FILE *fin, struct aes *ctx );
 void rijndael_enc_main( void );
+int main_rijndael_enc( void );
 
 /* 
   CPU assignment function

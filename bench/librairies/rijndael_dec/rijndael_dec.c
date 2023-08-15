@@ -69,6 +69,7 @@ int rijndael_dec_return( void );
 void rijndael_dec_fillrand( unsigned char *buf, int len );
 void rijndael_dec_decfile( struct rijndael_dec_FILE *fin, struct aes *ctx );
 void rijndael_dec_main( void );
+int main_rijndael_dec( void );
 
 /* 
   CPU assignment function

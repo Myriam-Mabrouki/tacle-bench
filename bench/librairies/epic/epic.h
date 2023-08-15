@@ -68,5 +68,6 @@ void epic_internal_filter( register float *image, register int x_dim,
 
 void epic_reflect1( float *filt, int x_dim, int y_dim, int x_pos, int y_pos,
                     float *result, int f_or_e );
+int main_epic( void );
 
 #endif // __EPIC_H_

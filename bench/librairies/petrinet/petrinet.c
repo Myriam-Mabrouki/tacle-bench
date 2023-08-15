@@ -50,7 +50,7 @@ void assign_to_CPU ( int cpuid );
 void petrinet_init( void );
 int petrinet_return( void );
 void petrinet_main( void );
-int main( void );
+int main_petrinet( void );
 
 
 volatile int  petrinet_P1_is_marked;

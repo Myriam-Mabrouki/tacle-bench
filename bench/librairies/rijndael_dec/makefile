@@ -6,7 +6,7 @@ all: librijndael_dec.so
 librijndael_dec.so: rijndael_dec.o rijndael_dec_libc.o aes.o input_small_enc.o
 	$(CC) -shared -o librijndael_dec.so rijndael_dec.o rijndael_dec_libc.o aes.o input_small_enc.o
 	
-rijndael_dec.o: rijndael_dec.c rijndael_dec_libc.h aes.h
+rijndael_dec.o: rijndael_dec.c rijndael_dec_libc.h aes.h rijndael_dec.h
 	$(CC) $(CFLAGS) -c rijndael_dec.c
 
 rijndael_dec_libc.o: rijndael_dec_libc.c rijndael_dec_libc.h

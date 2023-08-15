@@ -115,7 +115,7 @@ int g723_enc_pack_output(
 void g723_enc_init();
 int g723_enc_return();
 void g723_enc_main();
-int main( void );
+int main_g723_enc( void );
 
 /*
   Declaration of global variables

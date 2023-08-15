@@ -98,7 +98,7 @@ int mpeg2_bdist2( unsigned char *, unsigned char *, unsigned char *, int, int,
                   int, int, int, int );
 int mpeg2_variance( unsigned char *, int );
 void mpeg2_main( void );
-int main( void );
+int main_mpeg2( void );
 
 
 /*

@@ -65,7 +65,7 @@ void ndes_ks( /*immense key, */int n, ndes_great *kn );
 void ndes_init( void );
 int ndes_return( void );
 void ndes_main( void );
-int main( void );
+int main_ndes( void );
 
 /* 
   CPU assignment function

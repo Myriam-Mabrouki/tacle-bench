@@ -69,6 +69,7 @@ void fmref_init_equalizer( EqualizerData *data );
 void fmref_run_equalizer( FloatBuffer *fbin, FloatBuffer *fbout,
                           EqualizerData *data );
 void fmref_main( void );
+int main_fmref( void );
 
 /* 
   CPU assignment function

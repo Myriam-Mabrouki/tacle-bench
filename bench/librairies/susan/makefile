@@ -6,7 +6,7 @@ all: libsusan.so
 libsusan.so: input.o susan.o wccfile.o wcclibm.o wccmalloc.o
 	$(CC) -shared -o libsusan.so input.o susan.o wccfile.o wccmalloc.o wcclibm.o
 	
-susan.o: susan.c wcclibm.h wccfile.h wccmalloc.h
+susan.o: susan.c wcclibm.h wccfile.h wccmalloc.h susan.h
 	$(CC) $(CFLAGS) -c susan.c
 	
 input.o: input.c

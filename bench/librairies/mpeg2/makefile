@@ -6,7 +6,7 @@ all: libmpeg2.so
 libmpeg2.so: mpeg2.o
 	$(CC) -shared -o libmpeg2.so mpeg2.o
 
-mpeg2.o: mpeg2.c
+mpeg2.o: mpeg2.c mpeg2.h
 	$(CC) $(CFLAGS) -c mpeg2.c
 
 clean:

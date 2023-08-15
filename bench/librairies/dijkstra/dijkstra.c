@@ -73,7 +73,7 @@ void dijkstra_dequeue( int *node, int *dist, int *prev );
 int dijkstra_qcount( void );
 int dijkstra_find( int chStart, int chEnd );
 void dijkstra_main( void );
-int main( void );
+int main_dijkstra( void );
 
 /* 
   CPU assignment function

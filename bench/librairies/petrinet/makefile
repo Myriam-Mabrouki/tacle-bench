@@ -6,7 +6,7 @@ all: libpetrinet.so
 libpetrinet.so: petrinet.o
 	$(CC) -shared -o libpetrinet.so petrinet.o
 
-petrinet.o: petrinet.c
+petrinet.o: petrinet.c petrinet.h
 	$(CC) $(CFLAGS) -c petrinet.c
 
 clean:

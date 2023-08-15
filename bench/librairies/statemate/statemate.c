@@ -78,6 +78,7 @@ void statemate_generic_BLOCK_ERKENNUNG_CTRL( void );
 void statemate_FH_DU( void );
 void statemate_main( void );
 int statemate_return ( void );
+int main_statemate( void );
 
 
 /*

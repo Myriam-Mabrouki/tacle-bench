@@ -80,7 +80,7 @@ int cjpeg_wrbmp_putc_modified( int character );
 void cjpeg_wrbmp_init();
 void cjpeg_wrbmp_main();
 int cjpeg_wrbmp_return();
-int main();
+int main_cjpeg_wrbmp();
 
 /* 
   CPU assignment function

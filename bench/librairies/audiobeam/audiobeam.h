@@ -46,5 +46,7 @@ struct audiobeam_PreprocessedDelays {
 
 #define INTERPOLATE(low_value, high_value, offset) (((high_value-low_value)*(offset)) + low_value)
 
+int main_audiobeam( void );
+
 #endif
 

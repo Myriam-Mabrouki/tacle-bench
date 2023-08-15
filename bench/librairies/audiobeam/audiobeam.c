@@ -44,7 +44,7 @@ void assign_to_CPU ( int cpuid );
 void audiobeam_init();
 int audiobeam_return();
 void audiobeam_main( void );
-int main( void );
+int main_audiobeam( void );
 void audiobeam_preprocess_delays( struct audiobeam_PreprocessedDelays
                                   prep_delays[  ], float *delays );
 float *audiobeam_parse_line( float *float_arr, int num_mic );

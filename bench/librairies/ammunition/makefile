@@ -6,7 +6,7 @@ all: libammunition.so
 libammunition.so: ammunition.o ammunition_libc.o arithm.o bits.o
 	$(CC) -shared -o libammunition.so ammunition.o ammunition_libc.o arithm.o bits.o
 	
-ammunition.o: ammunition.c ammunition_stdlib.h ammunition_stdio.h ammunition_string.h arithm.h bits.h 
+ammunition.o: ammunition.c ammunition_stdlib.h ammunition_stdio.h ammunition_string.h arithm.h bits.h ammunition.h
 	$(CC) $(CFLAGS) -o ammunition.o -c ammunition.c
 
 ammunition_libc.o: ammunition_libc.c ammunition_stdlib.h ammunition_stdio.h ammunition_string.h

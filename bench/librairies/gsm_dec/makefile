@@ -6,7 +6,7 @@ all: libgsm_dec.so
 libgsm_dec.so: gsm_dec.o
 	$(CC) -shared -o libgsm_dec.so gsm_dec.o
 
-gsm_dec.o: gsm_dec.c gsm.h data.h add.h private.h
+gsm_dec.o: gsm_dec.c gsm.h data.h add.h private.h gsm_dec.h
 	$(CC) $(CFLAGS) -c gsm_dec.c
 
 clean:

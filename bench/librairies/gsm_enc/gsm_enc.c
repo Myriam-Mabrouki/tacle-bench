@@ -114,7 +114,7 @@ void gsm_enc_Gsm_RPE_Encoding (
 
 
 void assign_to_CPU ( int cpuid );
-
+int main_gsm_enc( void );
 
 /**************** end #include "private.h" **********************************/
 

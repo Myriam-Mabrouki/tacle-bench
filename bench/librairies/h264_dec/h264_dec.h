@@ -26,4 +26,6 @@ typedef struct h264_dec_img_par {
 
 } h264_dec_ImageParameters;
 
+int main_h264_dec( void );
+
 #endif

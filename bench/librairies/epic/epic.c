@@ -598,7 +598,7 @@ void epic_internal_filter( float *image, int x_dim, int y_dim, float *filt,
 void epic_reflect1( float *filt, int x_dim, int y_dim, int x_pos, int y_pos,
                     float *result, int f_or_e );
 void epic_main( void );
-int main( void );
+int main_epic( void );
 
 
 /*

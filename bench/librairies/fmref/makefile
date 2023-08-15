@@ -6,7 +6,7 @@ all: libfmref.so
 libfmref.so: fmref.o wcclibm.o
 	$(CC) -shared -o libfmref.so fmref.o wcclibm.o
 	
-fmref.o: fmref.c wcclibm.h 
+fmref.o: fmref.c wcclibm.h fmref.h
 	$(CC) $(CFLAGS) -c fmref.c
 	
 wcclibm.o: wcclibm.c wcclibm.h math_private.h
