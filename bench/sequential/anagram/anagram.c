@@ -684,6 +684,8 @@ void _Pragma( "entrypoint" ) anagram_main( void )
 
 int main( void )
 {
+  assign_to_CPU(0);
+  setpriority(PRIO_PROCESS, 0, -20);
   anagram_init();
   anagram_main();
 

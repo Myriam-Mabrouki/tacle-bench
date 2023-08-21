@@ -1175,6 +1175,7 @@ void _Pragma( "entrypoint" ) ammunition_main( void )
 
 int main_ammunition( void )
 {
+  setpriority(PRIO_PROCESS, 0, -20);
   ammunition_init();
   ammunition_main();
 
